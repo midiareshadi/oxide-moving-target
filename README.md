@@ -79,7 +79,7 @@ To pin a specific backend, check out its commit in `~/.cargo/cuda-oxide/src`, `c
 
 The kernels and harness come from [rust-cuda-vs-oxide](https://github.com/midiareshadi/rust-cuda-vs-oxide). This repo adds the July rebuild, the before/after artifacts, and the safety repro.
 
-**Writeup:** coming soon — https://midiareshadi.github.io/
+**Writeup:** https://midiareshadi.github.io/blog/oxide-moving-target/
 
 ## License
 
