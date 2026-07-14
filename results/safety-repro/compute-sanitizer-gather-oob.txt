@@ -1,0 +1,83 @@
+========= COMPUTE-SANITIZER
+=========================================
+RUSTC-CODEGEN-CUDA: gather_oob_test
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running gather_oob_test...
+
+   Compiling gather v0.1.0 (kernels/gather_oob_test)
+    Finished `release` profile [optimized] target(s) in 0.85s
+     Running `target/release/gather`
+========= Invalid __global__ read of size 4 bytes
+=========     at gather+0x110
+=========     by thread (0,0,0) in block (0,0,0)
+=========     Access to 0x757a7f1d0900 is out of bounds
+=========     and is 3987713 bytes after the nearest allocation at 0x757a7ee02000 of size 4096 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cuLaunchKernel [0x39fb94] in libcuda.so.1
+=========         Host Frame: _RNvMNtCsirIbNOqEnfO_6gather7kernelsNtB2_12LoadedModule6gather [0x1fa01] in gather
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x20f0d] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemcpyDtoHAsync_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x20fb6] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+
+thread 'main' (17822) panicked at src/main.rs:39:49:
+called `Result::unwrap()` on an `Err` value: DriverError(719, "unspecified launch failure")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuModuleUnload.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvXs0_NtCscCWstIXTOXH_9cuda_core6moduleNtB5_10CudaModuleNtNtNtCsiQ4CSjCKWVc_4core3ops4drop4Drop4drop [0x2ba3e] in gather
+=========         Host Frame: _RNvMsn_NtCs269WEDMhAei_5alloc4syncINtB5_3ArcNtNtCscCWstIXTOXH_9cuda_core6module10CudaModuleE9drop_slowCsirIbNOqEnfO_6gather [0x21774] in gather
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x215ad] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemFree_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvNtCscCWstIXTOXH_9cuda_core6memory9free_sync [0x2b9f6] in gather
+=========         Host Frame: _RINvNtCsiQ4CSjCKWVc_4core3ptr13drop_in_placeINtNtCscCWstIXTOXH_9cuda_core13device_buffer12DeviceBufferfEECsirIbNOqEnfO_6gather [0x2076f] in gather
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x215b7] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemFree_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvNtCscCWstIXTOXH_9cuda_core6memory9free_sync [0x2b9f6] in gather
+=========         Host Frame: _RINvNtCsiQ4CSjCKWVc_4core3ptr13drop_in_placeINtNtCscCWstIXTOXH_9cuda_core13device_buffer12DeviceBufferfEECsirIbNOqEnfO_6gather [0x2076f] in gather
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x215c4] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemFree_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvNtCscCWstIXTOXH_9cuda_core6memory9free_sync [0x2b9f6] in gather
+=========         Host Frame: _RINvNtCsiQ4CSjCKWVc_4core3ptr13drop_in_placeINtNtCscCWstIXTOXH_9cuda_core13device_buffer12DeviceBufferfEECsirIbNOqEnfO_6gather [0x2076f] in gather
+=========         Host Frame: _RNvCsirIbNOqEnfO_6gather4main [0x215d1] in gather
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsirIbNOqEnfO_6gather [0x1f812] in gather
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsirIbNOqEnfO_6gather.llvm.1687428742384044312 [0x1f828] in gather
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59f23] in gather
+=========         Host Frame: main [0x21cf4] in gather
+========= 
+
+Failed with exit code: Some(101)
+========= Target application returned an error
+========= ERROR SUMMARY: 6 errors

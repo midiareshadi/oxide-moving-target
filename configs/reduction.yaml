@@ -1,0 +1,8 @@
+kernel: reduction
+rust_dir: kernels/reduction/oxide
+cuda_src: kernels/reduction/cuda/reduction.cu
+arch: sm_89
+opt: 3
+fast_math: false
+oxide_profile: release
+runtime_check: false

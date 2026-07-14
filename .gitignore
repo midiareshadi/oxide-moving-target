@@ -1,0 +1,23 @@
+# Rust build output
+target/
+**/target/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Intermediate compile junk (artifacts we keep live in results/artifacts/)
+*.cubin
+*.o
+*.tmp
+
+# Local environment
+.env
+kernels/**/*.ptx
+kernels/**/*.ll
+
+# rust-cuda cells: build artifacts and generated PTX
+kernels/*/rust-cuda/target/
+kernels/*/rust-cuda/kernels/target/
+kernels/*/rust-cuda/*.ptx

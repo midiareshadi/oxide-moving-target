@@ -1,0 +1,23 @@
+# One config per kernel, mirroring the configs/ convention from attn-dsl-bench.
+# The harness reads this to drive all three toolchains with matched settings.
+
+kernel: vecadd
+
+# Source locations (relative to repo root)
+rust_dir: kernels/vecadd/oxide
+cuda_src: kernels/vecadd/cuda/vecadd.cu
+
+# Target + optimization — held identical across cuda-oxide / clang / nvcc
+arch: sm_89          # L4 is Ada, compute capability 8.9
+opt: 3               # -O3 everywhere
+fast_math: false     # keep off for vecadd; matters for the softmax kernel later
+
+# Launch shape (also used to set launch bounds so ptxas register alloc matches)
+block_size: 256
+num_elems: 1024
+
+# cuda-oxide build profile: debug or release
+oxide_profile: release
+
+# Runtime sanity check (only needs the L4; skip with --no-run for CPU-only work)
+runtime_check: true

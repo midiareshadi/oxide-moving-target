@@ -1,0 +1,5 @@
+# Repo-level pin. Each kernel project under kernels/<k>/rust/ also carries its
+# own copy so `cargo oxide` picks up the right nightly regardless of cwd.
+[toolchain]
+channel = "nightly-2026-04-03"
+components = ["rust-src", "rustc-dev", "llvm-tools"]

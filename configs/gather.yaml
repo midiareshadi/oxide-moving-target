@@ -1,0 +1,9 @@
+kernel: gather
+rust_dir: kernels/gather/oxide
+cuda_src: kernels/gather/cuda/gather.cu
+arch: sm_89
+opt: 3
+fast_math: false
+block_size: 256
+num_elems: 1024
+runtime_check: true

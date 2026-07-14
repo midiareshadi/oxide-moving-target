@@ -1,0 +1,17 @@
+========= COMPUTE-SANITIZER
+=========================================
+RUSTC-CODEGEN-CUDA: gather_oob_test
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running gather_oob_test...
+
+   Compiling gather v0.1.0 (kernels/gather_oob_test)
+    Finished `release` profile [optimized] target(s) in 0.69s
+     Running `target/release/gather`
+Kernel finished without trapping.
+out[0] (from OOB index 1_000_000 into src[0..1024]) = 0
+out[1] (valid, should be 1022) = 1022
+========= ERROR SUMMARY: 0 errors

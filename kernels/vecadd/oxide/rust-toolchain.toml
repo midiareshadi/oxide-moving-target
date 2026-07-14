@@ -1,0 +1,6 @@
+# cuda-oxide is pinned to a specific nightly because it reads rustc's
+# Stable MIR via rustc_public. Match whatever the cuda-oxide release you
+# installed pins — verify against the cuda-oxide repo's own rust-toolchain.toml.
+[toolchain]
+channel = "nightly-2026-04-03"
+components = ["rust-src", "rustc-dev", "llvm-tools"]

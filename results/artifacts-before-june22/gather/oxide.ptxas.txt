@@ -1,0 +1,8 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'gather' for 'sm_89'
+ptxas info    : Function properties for gather
+    8 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 8 bytes cumulative stack size, 400 bytes cmem[0]
+ptxas info    : Compile time = 4.892 ms
+ptxas info    : Function properties for cuda_device____internal__index_1d
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
