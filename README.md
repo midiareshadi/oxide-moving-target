@@ -2,6 +2,10 @@
 
 **The finding, in one line:** I re-tested [cuda-oxide](https://github.com/NVlabs/cuda-oxide) (a Rust-to-GPU compiler) a few weeks after my [first study](https://github.com/midiareshadi/rust-cuda-vs-oxide). Two of my three findings had changed — and one change removed a bounds check, so safe Rust code now reads out of bounds. Reported as [cuda-oxide issue #396](https://github.com/NVlabs/cuda-oxide/issues/396).
 
+> **Update (July 2026) — the real cause, and the fix.** A cuda-oxide developer diagnosed this in [issue #396](https://github.com/NVlabs/cuda-oxide/issues/396): the failed-bounds-check branch was lowered to LLVM `unreachable`, which means "control can never reach here" (UB), not "stop here". Once the pipeline gained an `opt -O2` step, SimplifyCFG folded the check into `llvm.assume(j < len)` and deleted the branch — hence the out-of-bounds read. The IR was wrong all along; **v0.2.0 was safe by accident** (no `opt -O2`), not by design. So this is not "a check was removed in July" — it is an older lowering bug that the optimizer exposed.
+>
+> A fix landed the same day ([PR #405](https://github.com/NVlabs/cuda-oxide/pull/405)): emit a `trap` before the `unreachable`. I verified it on sm_89 (L4): the gather PTX regains both bounds guards (`setp` 1 → 3), each abort path carries a `trap` (0 → 2), and compute-sanitizer reports no invalid reads — the kernel traps instead.
+
 ## The reproducibility trap
 
 cuda-oxide has a **frontend** (`cargo-oxide`, version-tagged) and a **backend** (`librustc_codegen_cuda`, the part that makes GPU code). Installing a tagged frontend does **not** pin the backend: the backend is fetched from the latest `main` branch. I confirmed this — frontend v0.2.0 and v0.2.1 both fetched the **same** backend commit (`29396b7`, 2026-07-04). So the version tag does not identify the compiler; the backend commit + date does.
