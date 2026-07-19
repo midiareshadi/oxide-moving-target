@@ -39,6 +39,17 @@ Same safe-Rust source; opposite memory safety. I bisected the change to within a
 
 Honest scope: the check on the *output* slice (`DisjointSlice::get_mut`, a witness-style access) still works. It is specifically plain `&[T]` checked indexing (`src[j]`) that lost its check.
 
+## Follow-on: the same bug, silent variant (#407 / #408)
+
+After #396 was fixed, a cuda-oxide developer found the **same** `unreachable`-on-a-runtime-reachable-path mistake at a second lowering site: diverging panic calls (`.unwrap()` on `None`, `panic!`, etc.), filed as [#407](https://github.com/NVlabs/cuda-oxide/issues/407) and fixed in [#408](https://github.com/NVlabs/cuda-oxide/pull/408).
+
+This variant is worse than #396: there is no out-of-bounds read for compute-sanitizer to catch. The optimizer folds the panic arm into the surrounding code and stores an **uninitialized register** into the output — silent wrong data, zero sanitizer errors.
+
+I reproduced it and verified the fix on sm_89 (L4). See `kernels/panic_trap_test/` and `results/safety-repro-407/`:
+
+- **Before** (`29396b7`): `FAIL (unwrap(None) did not panic, out[0] = 0)`, `ERROR SUMMARY: 0 errors` — silent.
+- **After** (`6a58392`, #408): PTX panic path gains a `trap` (0 -> 1); at runtime the kernel traps instead of returning garbage.
+
 ## Where the evidence lives
 
 ```

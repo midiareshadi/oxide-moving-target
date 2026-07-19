@@ -1,0 +1,27 @@
+========= COMPUTE-SANITIZER
+=========================================
+RUSTC-CODEGEN-CUDA: panic_trap_test
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running panic_trap_test...
+
+   Compiling panic_trap_test v0.1.0 (kernels/panic_trap_test)
+warning: unnecessary `unsafe` block
+  --> src/main.rs:25:18
+   |
+25 |     let result = unsafe {
+   |                  ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` (part of `#[warn(unused)]`) on by default
+
+warning: `panic_trap_test` (bin "panic_trap_test") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 43.31s
+     Running `target/release/panic_trap_test`
+FAIL (unwrap(None) did not panic, out[0] = 0)
+
+Failed with exit code: Some(1)
+========= Target application returned an error
+========= ERROR SUMMARY: 0 errors

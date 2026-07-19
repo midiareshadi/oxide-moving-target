@@ -1,0 +1,73 @@
+========= COMPUTE-SANITIZER
+=========================================
+RUSTC-CODEGEN-CUDA: panic_trap_test
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running panic_trap_test...
+
+   Compiling panic_trap_test v0.1.0 (kernels/panic_trap_test)
+warning: unnecessary `unsafe` block
+  --> src/main.rs:25:18
+   |
+25 |     let result = unsafe {
+   |                  ^^^^^^ unnecessary `unsafe` block
+   |
+   = note: `#[warn(unused_unsafe)]` (part of `#[warn(unused)]`) on by default
+
+warning: `panic_trap_test` (bin "panic_trap_test") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 0.85s
+     Running `target/release/panic_trap_test`
+========= Trace/breakpoint trap
+=========     at unwrap_get+0x150
+=========     by thread (0,0,0) in block (0,0,0)
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cuLaunchKernel [0x39fb94] in libcuda.so.1
+=========         Host Frame: _RNvMNtCsaY2UwYkca8_15panic_trap_test7kernelsNtB2_12LoadedModule10unwrap_get [0x1fbef] in panic_trap_test
+=========         Host Frame: _RNvCsaY2UwYkca8_15panic_trap_test4main [0x20c25] in panic_trap_test
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsaY2UwYkca8_15panic_trap_test [0x1fa22] in panic_trap_test
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsaY2UwYkca8_15panic_trap_test.llvm.4933034300589228580 [0x1fa38] in panic_trap_test
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59d03] in panic_trap_test
+=========         Host Frame: main [0x21af4] in panic_trap_test
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemcpyDtoHAsync_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvMs7_NtCscCWstIXTOXH_9cuda_core13device_bufferINtB5_12DeviceBufferfE11to_host_vecCsaY2UwYkca8_15panic_trap_test [0x1fe4b] in panic_trap_test
+=========         Host Frame: _RNvCsaY2UwYkca8_15panic_trap_test4main [0x20c55] in panic_trap_test
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsaY2UwYkca8_15panic_trap_test [0x1fa22] in panic_trap_test
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsaY2UwYkca8_15panic_trap_test.llvm.4933034300589228580 [0x1fa38] in panic_trap_test
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59d03] in panic_trap_test
+=========         Host Frame: main [0x21af4] in panic_trap_test
+========= 
+PASS (kernel trapped: DriverError(719, "unspecified launch failure"))
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemFree_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvNtCscCWstIXTOXH_9cuda_core6memory9free_sync [0x2b7d6] in panic_trap_test
+=========         Host Frame: _RNvCsaY2UwYkca8_15panic_trap_test4main [0x20cca] in panic_trap_test
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsaY2UwYkca8_15panic_trap_test [0x1fa22] in panic_trap_test
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsaY2UwYkca8_15panic_trap_test.llvm.4933034300589228580 [0x1fa38] in panic_trap_test
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59d03] in panic_trap_test
+=========         Host Frame: main [0x21af4] in panic_trap_test
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuMemFree_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvNtCscCWstIXTOXH_9cuda_core6memory9free_sync [0x2b7d6] in panic_trap_test
+=========         Host Frame: _RNvCsaY2UwYkca8_15panic_trap_test4main [0x20d14] in panic_trap_test
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsaY2UwYkca8_15panic_trap_test [0x1fa22] in panic_trap_test
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsaY2UwYkca8_15panic_trap_test.llvm.4933034300589228580 [0x1fa38] in panic_trap_test
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59d03] in panic_trap_test
+=========         Host Frame: main [0x21af4] in panic_trap_test
+========= 
+========= Program hit CUDA_ERROR_LAUNCH_FAILED (error 719) due to "unspecified launch failure" on CUDA API call to cuModuleUnload.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: _RNvXs0_NtCscCWstIXTOXH_9cuda_core6moduleNtB5_10CudaModuleNtNtNtCsiQ4CSjCKWVc_4core3ops4drop4Drop4drop [0x2b81e] in panic_trap_test
+=========         Host Frame: _RNvMsn_NtCs269WEDMhAei_5alloc4syncINtB5_3ArcNtNtCscCWstIXTOXH_9cuda_core6module10CudaModuleE9drop_slowCsaY2UwYkca8_15panic_trap_test [0x210f4] in panic_trap_test
+=========         Host Frame: _RNvCsaY2UwYkca8_15panic_trap_test4main [0x20d40] in panic_trap_test
+=========         Host Frame: _RINvNtNtCshltci4ES9lx_3std3sys9backtrace28___rust_begin_short_backtraceFEuuECsaY2UwYkca8_15panic_trap_test [0x1fa22] in panic_trap_test
+=========         Host Frame: _RNCINvNtCshltci4ES9lx_3std2rt10lang_startuE0CsaY2UwYkca8_15panic_trap_test.llvm.4933034300589228580 [0x1fa38] in panic_trap_test
+=========         Host Frame: _RNvNtCshltci4ES9lx_3std2rt19lang_start_internal [0x59d03] in panic_trap_test
+=========         Host Frame: main [0x21af4] in panic_trap_test
+========= 
+========= ERROR SUMMARY: 5 errors
