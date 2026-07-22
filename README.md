@@ -4,7 +4,9 @@
 
 > **Update (July 2026) — the real cause, and the fix.** A cuda-oxide developer diagnosed this in [issue #396](https://github.com/NVlabs/cuda-oxide/issues/396): the failed-bounds-check branch was lowered to LLVM `unreachable`, which means "control can never reach here" (UB), not "stop here". Once the pipeline gained an `opt -O2` step, SimplifyCFG folded the check into `llvm.assume(j < len)` and deleted the branch — hence the out-of-bounds read. The IR was wrong all along; **v0.2.0 was safe by accident** (no `opt -O2`), not by design. So this is not "a check was removed in July" — it is an older lowering bug that the optimizer exposed.
 >
-> A fix landed the same day ([PR #405](https://github.com/NVlabs/cuda-oxide/pull/405)): emit a `trap` before the `unreachable`. I verified it on sm_89 (L4): the gather PTX regains both bounds guards (`setp` 1 → 3), each abort path carries a `trap` (0 → 2), and compute-sanitizer reports no invalid reads — the kernel traps instead.
+> A fix landed the same day and is now merged ([PR #405](https://github.com/NVlabs/cuda-oxide/pull/405), closing #396): emit a `trap` before the `unreachable`. I verified it on sm_89 (L4): the gather PTX regains both bounds guards (`setp` 1 → 3), each abort path carries a `trap` (0 → 2), and compute-sanitizer reports no invalid reads — the kernel traps instead.
+>
+> The same `unreachable`-on-a-reachable-path mistake also existed at a second lowering site — diverging panic calls like `.unwrap()` on `None`. That variant was worse: no crash, no error, just an uninitialized register in the output, and compute-sanitizer stayed silent. Filed as [#407](https://github.com/NVlabs/cuda-oxide/issues/407), fixed in [#408](https://github.com/NVlabs/cuda-oxide/pull/408) (merged). I verified that fix on sm_89 too: `trap` 0 → 1 in the PTX panic path, and the kernel traps instead of returning garbage.
 
 ## The reproducibility trap
 
@@ -38,17 +40,6 @@ I ran the identical program on both builds with an out-of-range index (`indices[
 Same safe-Rust source; opposite memory safety. I bisected the change to within about a week of the v0.2.0 release. Full report: [issue #396](https://github.com/NVlabs/cuda-oxide/issues/396) (also saved here as `ISSUE-396.md`).
 
 Honest scope: the check on the *output* slice (`DisjointSlice::get_mut`, a witness-style access) still works. It is specifically plain `&[T]` checked indexing (`src[j]`) that lost its check.
-
-## Follow-on: the same bug, silent variant (#407 / #408)
-
-After #396 was fixed, a cuda-oxide developer found the **same** `unreachable`-on-a-runtime-reachable-path mistake at a second lowering site: diverging panic calls (`.unwrap()` on `None`, `panic!`, etc.), filed as [#407](https://github.com/NVlabs/cuda-oxide/issues/407) and fixed in [#408](https://github.com/NVlabs/cuda-oxide/pull/408).
-
-This variant is worse than #396: there is no out-of-bounds read for compute-sanitizer to catch. The optimizer folds the panic arm into the surrounding code and stores an **uninitialized register** into the output — silent wrong data, zero sanitizer errors.
-
-I reproduced it and verified the fix on sm_89 (L4). See `kernels/panic_trap_test/` and `results/safety-repro-407/`:
-
-- **Before** (`29396b7`): `FAIL (unwrap(None) did not panic, out[0] = 0)`, `ERROR SUMMARY: 0 errors` — silent.
-- **After** (`6a58392`, #408): PTX panic path gains a `trap` (0 -> 1); at runtime the kernel traps instead of returning garbage.
 
 ## Where the evidence lives
 
